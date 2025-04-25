@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use colored::*;
 use std::error::Error;
 use std::fmt;
 
@@ -46,6 +47,16 @@ enum Commands {
     },
 }
 
+// Function to get currency color
+fn get_currency_color(currency: &str) -> ColoredString {
+    match currency.to_uppercase().as_str() {
+        EUR => "EUR".bright_blue(),
+        TRY => "TRY".bright_red(),
+        UAH => "UAH".bright_yellow(),
+        _ => currency.normal(),
+    }
+}
+
 // Function to convert between currencies
 fn convert_currency(amount: f64, from: &str, to: &str) -> Result<f64, ConverterError> {
     // Exchange rates (as of April 2025, for example purposes)
@@ -82,10 +93,36 @@ fn main() {
             // Convert the currencies
             match convert_currency(amount, &from, &to) {
                 Ok(result) => {
-                    println!("{} {} = {:.2} {}", amount, from.to_uppercase(), result, to.to_uppercase());
+                    let from_colored = get_currency_color(&from);
+                    let to_colored = get_currency_color(&to);
+                    
+                    // Format the result with 2 decimal places
+                    let formatted_amount = format!("{:.2}", amount).green();
+                    let formatted_result = format!("{:.2}", result).green();
+                    
+                    println("test");
+                    // Display the conversion with colors
+                    println!(
+                        "{} {} = {} {}", 
+                        formatted_amount, 
+                        from_colored,
+                        formatted_result, 
+                        to_colored
+                    );
+                    
+                    // Show the exchange rate
+                    let rate = result / amount;
+                    println!(
+                        "Exchange rate: {} {} = {} {}", 
+                        "1.00".yellow(), 
+                        from_colored,
+                        format!("{:.4}", rate).yellow(), 
+                        to_colored
+                    );
                 },
                 Err(e) => {
-                    eprintln!("Error: {}", e);
+                    eprintln!("{}", "Error:".bright_red().bold());
+                    eprintln!("  {}", e.to_string().bright_red());
                     std::process::exit(1);
                 }
             }
