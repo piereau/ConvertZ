@@ -1,0 +1,3 @@
+## HOW TO USE
+
+convertz convert <AMOUNT> <CURRENCY FROM> <CURRENCY TO>
